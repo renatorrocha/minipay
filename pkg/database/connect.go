@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/renatorrocha/minipay/config"
+	"github.com/renatorrocha/minipay/pkg/models"
+	"github.com/renatorrocha/minipay/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -34,8 +36,13 @@ func ConnectDB() {
 	if err != nil {
 		panic(fmt.Sprintf("Falha ao conectar ao banco de dados: %v", err))
 	}
-
 	fmt.Println("Database connected successfully")
-	DB.AutoMigrate()
+
+	DB.AutoMigrate(&models.Role{}, &models.User{})
 	fmt.Println("Database migrated successfully")
+
+	if err := utils.SeedRoles(DB); err != nil {
+		panic(fmt.Sprintf("Failed to ensure default roles: %v", err))
+	}
+	fmt.Println("Default roles seeded successfully")
 }
